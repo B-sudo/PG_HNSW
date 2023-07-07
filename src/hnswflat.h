@@ -137,6 +137,7 @@ typedef struct HnswflatBuildState
 	int			ep_level;
 	int			vertex_tuple_size;
 	int			edge_tuple_size;
+	int			max_vertex_per_page;
 
 	/* Level Probability */
 	int real_max_level;
@@ -161,6 +162,7 @@ typedef struct HnswflatMetaPageData
 	uint16      base_nb_num;           
     uint16      ef_build;            
     uint16      ef_search;
+	uint16		max_vertex_per_page;
 	int16		ep_level;
     BlockNumber edgeStartPage;
 }			HnswflatMetaPageData;
@@ -202,7 +204,6 @@ typedef struct HnswflatScanList
 
 typedef struct HnswflatScanOpaqueData
 {
-	int			probes;
 	bool		first;
 	Buffer		buf;
 
@@ -217,9 +218,19 @@ typedef struct HnswflatScanOpaqueData
 	FmgrInfo   *normprocinfo;
 	Oid			collation;
 
+	/* Setting */
+	int64 		ep_id;
+	int			ep_level;
+	uint16      base_nb_num; 
+	uint16      ef_search;
+	int			max_vertex_per_page;
+
+	/* In memory Results */
+	int64		*id;
+	double		*dis;
+
 	/* Lists */
 	pairingheap *listQueue;
-	HnswflatScanList lists[FLEXIBLE_ARRAY_MEMBER];	/* must come last */
 }			HnswflatScanOpaqueData;
 
 typedef HnswflatScanOpaqueData * HnswflatScanOpaque;

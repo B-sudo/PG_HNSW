@@ -342,6 +342,8 @@ InmemoryLoad(HnswflatBuildState * buildstate, ForkNumber forkNum)
 		cpage = BufferGetPage(cbuf);
 
 		maxoffno = PageGetMaxOffsetNumber(cpage);
+        if (nextblkno == HNSWFLAT_HEAD_BLKNO)
+            buildstate->max_vertex_per_page = maxoffno;
 
 		for (offno = FirstOffsetNumber; offno <= maxoffno; offno = OffsetNumberNext(offno))
         {
@@ -379,6 +381,7 @@ CreateEdgePages(HnswflatBuildState * buildstate, ForkNumber forkNum)
     Buffer		cbuf;
 	Page		cpage;
     GenericXLogState *state;
+    HnswflatEdge edge;
     Size        itemsz;
     int64       i;
     int         j;
@@ -426,6 +429,7 @@ CreateEdgePages(HnswflatBuildState * buildstate, ForkNumber forkNum)
     meta->edgeStartPage = edgeStartPage;
     meta->ep_id = buildstate->ep_id;
     meta->ep_level = buildstate->ep_level;
+    meta->max_vertex_per_page = buildstate->max_vertex_per_page;
 
     IvfflatCommitBuffer(cbuf, state);
 
